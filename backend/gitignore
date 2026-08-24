@@ -1,0 +1,23 @@
+# Segredos — nunca versionar
+.env
+.env.local
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+*.log
+
+# Relatórios gerados
+*.csv
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
