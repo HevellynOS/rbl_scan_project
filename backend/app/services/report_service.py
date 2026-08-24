@@ -72,13 +72,9 @@ def _hex(c) -> str:
     return "#" + c.hexval()[2:]
 
 
-def _assets_dir() -> str:
-    base = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
-    return os.path.join(base, "assets")
-
-
 def _logo_path() -> str | None:
-    p = os.path.join(_assets_dir(), "logo-pronetworks.png")
+    from app.core.config import assets_dir
+    p = os.path.join(assets_dir(), "logo-pronetworks.png")
     return p if os.path.exists(p) else None
 
 

@@ -26,8 +26,8 @@ from __future__ import annotations
 import ipaddress
 import re
 
-from rsc_analyzer import Finding
-from vrp_parser import (
+from app.analyzers.rsc_analyzer import Finding
+from app.parsers.vrp_parser import (
     Block,
     VrpConfig,
     as_network,

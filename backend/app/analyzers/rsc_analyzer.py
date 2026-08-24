@@ -21,7 +21,7 @@ import re
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 
-from rsc_parser import Config, Item, as_network, is_private, parse
+from app.parsers.rsc_parser import Config, Item, as_network, is_private, parse
 
 SEV_LABEL = {3: "crítico", 2: "importante", 1: "recomendado", 0: "informativo"}
 
@@ -740,8 +740,8 @@ def _analisa_routeros(name: str, text: str) -> dict:
 
 
 def _analisa_vrp(name: str, text: str) -> dict:
-    from vrp_analyzer import analyze_vrp
-    from vrp_parser import parse as parse_vrp
+    from app.analyzers.vrp_analyzer import analyze_vrp
+    from app.parsers.vrp_parser import parse as parse_vrp
 
     cfg = parse_vrp(text, name)
     findings, cgnat, role, razoes = analyze_vrp(cfg)
@@ -762,7 +762,7 @@ def _analisa_vrp(name: str, text: str) -> dict:
 
 def analyze(files: list[tuple[str, str]]) -> dict:
     """files = [(nome, conteudo)]. Detecta o fabricante e delega."""
-    from vrp_parser import parece_vrp
+    from app.parsers.vrp_parser import parece_vrp
 
     devices = []
     all_findings: list[tuple[str, Finding]] = []

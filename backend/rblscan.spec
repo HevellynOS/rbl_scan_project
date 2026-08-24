@@ -18,6 +18,7 @@ hidden = (
     collect_submodules("uvicorn")
     + collect_submodules("dns")
     + collect_submodules("reportlab")
+    + collect_submodules("app")
     + [
         "uvicorn.logging",
         "uvicorn.loops.auto",
@@ -32,10 +33,22 @@ hidden = (
         "websockets.legacy.server",
         "anyio._backends._asyncio",
         "email.mime.text",
-        "vrp_parser",
-        "vrp_analyzer",
-        "correlate",
-        "dns_report",
+        "app",
+        "app.main",
+        "app.api.routes_rbl",
+        "app.api.routes_dns",
+        "app.api.routes_reports",
+        "app.core.config",
+        "app.core.security",
+        "app.database.connection",
+        "app.database.models",
+        "app.parsers.rsc_parser",
+        "app.parsers.vrp_parser",
+        "app.analyzers.rsc_analyzer",
+        "app.analyzers.vrp_analyzer",
+        "app.services.rbl_service",
+        "app.services.dns_service",
+        "app.services.report_service",
     ]
 )
 

@@ -16,7 +16,7 @@ from __future__ import annotations
 import ipaddress
 from datetime import datetime, timezone
 
-from rsc_analyzer import NetmapRule
+from app.analyzers.rsc_analyzer import NetmapRule
 
 
 def _nets(values: list[str]) -> list:

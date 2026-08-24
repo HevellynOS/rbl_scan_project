@@ -1,0 +1,4170 @@
+<NAS-HUAWEI>display current-configuration
+!Software Version V800R023C00SPC500
+!Last configuration was updated at 2026-08-04 11:39:05+00:00 by carlos
+!Last configuration was saved at 2026-07-20 20:54:33+00:00 by pronetworks
+#
+sysname NAS-HUAWEI
+#
+set neid 7ac66b
+#
+FTP server enable
+FTP server-source all-interface
+undo FTP ipv6 server-source all-interface
+#
+cpu-defend policy 1
+ car arp cir 2048
+ car ns cir 2048
+#
+ntp-service server source-interface all disable
+ntp-service ipv6 server source-interface all disable
+#
+slot 3
+ cpu-defend-policy 1
+#
+vlan batch 10 100 599 1001 to 1045 1050 to 1052 1100 1200 1250 1300 1400
+vlan batch 2001 to 2045 2100 2200 2300 2400 3001 to 3056 3100 3200 3300 3310
+vlan batch 3400 3410
+#
+rsa peer-public-key joao-key encoding-type openssh
+ public-key-code begin
+  ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCturwHE6X964R2X3KPAW31Y1Sve0zTUnjUdKsetCMF
+  fzemzaPA0BsnPIUDv7d6if6uljzSX5PCEr2RPZEXxjx9aQ0FByUri4PGfXpiXZhsHACuatDULWIReFvU
+  82dbrTTsz8GTJX+tF6obxwh3qkUIgKV8JM52989tQ9C5btDy8X5WG1yh9ZnCVBot4ytv9nh1l1k8fF1a
+  Cagi6wQTDUQpaJpcNWCNLXuRPHAISGgQ7KjIFd7o047OGO7VmifEG4/mu03bqVxE3VKIl7W7qWTPnGwg
+  nfBqW4Gcm+riDQ7QX/BU7UmHMZYc6VejvUSa3vkZ5yJaOlIh/OOAPM40n0pdZANVpDCflemwer30wXSJ
+  DeXWTrH8q1wrs+hdminqT/Ie/RtT/gHWQWWJNzHyJxDKuPsJ8tMOM5G1Me09TZ4r4k3uVpJMt4PbpFCb
+  dIdEIzF/4RgmcHmZraQwLpt/XD1hV9F0ED1MnnyJmT0OpbaSOu1opQNZUCiWoBJAhpetyKRjETT/2MNu
+  hDGZjHqWM/nGfKaoNL1PKBN+WAnxUXQRmyc3YPKYpbMazKsUiHCUtXmxiG74xRVN0YzKTI4tskLG3UAm
+  gFsd/ABSA4IQQb1V2o0P21Y6BmqFY/0YpFzvGeh/h7MAPTaUDhuqHQDiE0V9ArZFJjLtJS/dW5Dln48E
+  LQ== rsa-key
+ public-key-code end
+ peer-public-key end
+#
+as-notation plain
+#
+undo telnet server enable
+undo telnet ipv6 server enable
+undo telnet server-source all-interface
+undo telnet ipv6 server-source all-interface
+#
+radius-attribute framed-ip-address encapsulation-method version2
+radius-attribute delegated-ipv6-prefix encapsulation-method version2
+#
+diffserv domain default
+#
+diffserv domain 5p3d
+#
+soc
+#
+ip vpn-instance __LOCAL_OAM_VPN__
+ ipv4-family
+ ipv6-family
+#
+radius-server group nw-pppoe
+ radius-server shared-key-cipher %^%#Pu1]O^:y*6S,#{WV~*#:u+;8V{J0q6qYO!4[[RlX$ysyA8;f>G.1(,YplTh6%^%#
+ radius-server authentication 170.78.36.4 1812 weight 0
+ radius-server accounting 170.78.36.4 1813 weight 0
+ radius-server retransmit 5 timeout 10
+ radius-server accounting-start-packet resend 3
+ radius-server accounting-stop-packet resend 3
+ radius-server accounting-interim-packet resend 5
+ radius-server user-name original
+ radius-server accounting-stop-packet send force
+ radius-attribute case-sensitive qos-profile-name
+#
+radius-server group nw-pppoe-ixc
+ radius-server shared-key-cipher %^%#i!iCL7].s,vJAzV$=|o1{Br7Ef5zb2thJ5=%b~u)A85e0+WJYJJ;IK6dDt!C%^%#
+ radius-server authentication 170.78.36.2 1812 weight 0
+ radius-server accounting 170.78.36.2 1813 weight 0
+ radius-server retransmit 5 timeout 10
+ radius-server accounting-start-packet resend 3
+ radius-server accounting-stop-packet resend 3
+ radius-server accounting-interim-packet resend 5
+ radius-server user-name original
+ radius-server accounting-stop-packet send force
+ radius-attribute case-sensitive qos-profile-name
+#
+radius-server group ixcprovedor
+ radius-server shared-key-cipher %^%#c}vEJtpo+X5oXz8@&/<'6b319zW=9VPTTF!AC>D!=e]F=REbL'r9`T:)pDj-%^%#
+ radius-server shared-key-cipher %^%#\Q1k=bza%WmXONK1|#""^I[OJ_SSjRNgZq+%oq{3iiqHGe)#uD*DIHND"m=~%^%# authentication 170.78.36.2 source ip-address 170.78.36.46 1812 weight 0
+ radius-server shared-key-cipher %^%#!GnB=^jYaTeP@X#a.ui4Y(9~"LgU%6[pqI:}IV7I}jMtMX'+RC&#{tMF'r3$%^%# accounting 170.78.36.2 source ip-address 170.78.36.46 1813 weight 0
+ radius-server nas-ip-address 170.78.36.46
+ radius-server attribute translate
+ radius-server user-name original
+ radius-server user-name trust-server-request
+ radius-attribute include HW-Auth-Type
+ radius-attribute include Reply-Message coa-nak
+ radius-attribute include edsg-service-name accounting-request
+ radius-attribute include Event-Timestamp accounting-on accounting-off
+ radius-attribute translate extend HW-Auth-Type vendor-specific 2011 109 access-request account
+ radius-attribute assign hw-mng-ipv6 pppoe motm
+ radius-attribute case-sensitive qos-profile-name
+ radius-attribute apply user-name match user-type ipoe
+ radius-attribute apply framed-ipv6-pool match pool-type
+ radius-attribute service-type value outbound user-type ipoe
+ radius-attribute hw-user-password simple coa-request
+#
+radius local-ip all
+radius-server authorization 170.78.36.2 destination-port 3799 shared-key-cipher %^%#e$)^C)Y4c-*;>aGCCXr2U43H2,]m7~/V&/TSzOm~nLRQO'WSj-p+e%MsRo:D%^%# server-group ixcprovedor
+radius-server authorization 170.78.36.4 destination-port 3799 shared-key-cipher %^%#)uX2A&hj(<Fxwp!e@>q'[O,i2iE4VSq$kHWEQ"6!Im$V=kl,sRAlrGP2pv#!%^%# server-group nw-pppoe
+#
+pnp default route 192.168.200.249 vpn-instance __LOCAL_OAM_VPN__
+#
+mpls
+#
+mpls l2vpn
+#
+ip pool bloqueiov4 bas local
+ gateway 10.200.0.1 255.255.248.0
+ section 0 10.200.0.2 10.200.3.255
+#
+ip pool pool_aguardando_assinatura bas local
+ gateway 172.22.1.1 255.255.255.0
+ section 0 172.22.1.2 172.22.1.254
+ lease 0 12 0
+#
+ip pool pool_aviso_atraso bas local
+ gateway 172.20.1.1 255.255.255.0
+ section 0 172.20.1.2 172.20.1.254
+ lease 0 12 0
+#
+ip pool pool_bloqueio bas local
+ gateway 172.21.1.1 255.255.255.0
+ section 0 172.21.1.2 172.21.1.254
+ lease 0 12 0
+#
+ip pool pool_cgnat bas local
+ gateway 100.64.0.1 255.255.224.0
+ section 0 100.64.0.2 100.64.31.255
+#
+dhcp server request-packet all-interface disable
+#
+ipv6 prefix prefix-pd delegation
+ prefix 2804:3534:40::/42 delegating-prefix-length 56
+ lifetime preferred-lifetime days 0 hours 0 minutes 30 valid-lifetime days 0 hours 0 minutes 30
+#
+ipv6 prefix prefix-wan local
+ prefix 2804:3534:8::/46
+#
+ipv6 pool prefix-pd bas delegation
+ dns-server 2001:4860:4860::8888 2001:4860:4860::8844
+ prefix prefix-pd
+#
+ipv6 pool prefix-wan bas local
+ dhcpv6 rapid-commit
+ dns-server 2001:4860:4860::8888 2001:4860:4860::8844
+ prefix prefix-wan
+#
+radius-server coa-request hw-policy-name daa same-policy reply-ack
+#
+dot1x-template 1
+#
+acl number 2500
+ description "EVOCODE-CLUSTER-WHITELIST"
+ rule 10 permit source 77.37.126.26 0
+ rule 20 permit source 138.99.160.54 0
+ rule 30 permit source 187.0.237.245 0
+ rule 40 permit source 200.15.19.10 0
+#
+acl name SNMP-basic basic
+ rule 10 permit source 170.78.36.0 0.0.0.255
+ rule 20 permit source 192.168.200.0 0.0.0.255
+ rule 30 permit
+#
+acl name BYPASS-NETWEST advance
+ rule 5 permit ip destination 100.64.0.0 0.0.31.255
+ rule 10 permit ip destination 100.80.0.0 0.0.1.255
+ rule 15 permit ip destination 170.78.36.0 0.0.0.255
+ rule 20 permit ip destination 170.78.37.0 0.0.0.255
+ rule 25 permit ip destination 170.78.38.0 0.0.0.255
+ rule 30 permit ip destination 170.78.39.0 0.0.0.255
+ rule 35 permit ip destination 192.168.200.0 0.0.0.255
+ rule 40 permit ip destination 192.168.20.0 0.0.0.255
+ rule 45 permit ip destination 192.168.39.0 0.0.0.7
+#
+acl name PBR_CGNAT-01-NETWEST advance
+ description PBR-CGNAT-01-NETWEST
+ rule 5 permit ip source 100.64.0.0 0.0.7.255
+ rule 10 permit ip source 100.64.8.0 0.0.7.255
+ rule 15 permit ip source 100.64.16.0 0.0.7.255
+ rule 20 permit ip source 100.64.24.0 0.0.7.255
+#
+acl name PBR_CGNAT-02-NETWEST advance
+ description PBR_CGNAT-02-NETWEST
+ rule 25 permit ip source 192.168.39.0 0.0.0.7
+ rule 30 permit ip source 100.80.0.0 0.0.0.255
+ rule 40 permit ip source 100.80.1.0 0.0.0.255
+#
+dhcpv6 duid 000100013083a7b3fc1bd1afa3c8
+#
+dhcpv6 rapid-commit
+dhcpv6 option-priority pool radius domain
+#
+traffic classifier C-BYPASS-NETWEST operator or
+ if-match acl name BYPASS-NETWEST precedence 1
+#
+traffic classifier C-CGNAT-01-NETWEST operator or
+ if-match acl name PBR_CGNAT-01-NETWEST precedence 1
+#
+traffic classifier C-CGNAT-02-NETWEST operator or
+ if-match acl name PBR_CGNAT-02-NETWEST precedence 1
+#
+traffic behavior B-BYPASS-NETWEST
+#
+traffic behavior B-CGNAT-01-NETWEST
+ redirect ip-nexthop 172.31.255.6
+#
+traffic behavior B-CGNAT-02-NETWEST
+ redirect ip-nexthop 172.31.255.10
+#
+traffic policy P-CGNAT
+ share-mode
+ classifier C-BYPASS-NETWEST behavior B-BYPASS-NETWEST precedence 10
+ classifier C-CGNAT-01-NETWEST behavior B-CGNAT-01-NETWEST precedence 20
+ classifier C-CGNAT-02-NETWEST behavior B-CGNAT-02-NETWEST precedence 30
+#
+security password
+ #
+ rule admin
+  forbidden word changeme_123
+#
+aaa
+ user-password password-force-change disable
+ local-user root password irreversible-cipher $1c$R%3w-X<=m'$$}7vY"1H4.~ezL'ug4:0t`S.9h)A75eJK)EiEXb~$
+ local-user root service-type ssh
+ local-user root level 3
+ local-user root state block fail-times 3 interval 5
+ local-user root expire 2000-01-01
+ local-user ftpuser password irreversible-cipher $1c$3msx*i>TuW$*(]+$~BV"W~"k=0qVVbI@JuA&IQkXF9Ua':d.0]@$
+ local-user ftpuser service-type ftp
+ local-user ftpuser level 3
+ local-user ftpuser state block fail-times 3 interval 5
+ local-user ftpuser ftp-directory cfcard:/
+ local-user carlos password irreversible-cipher $1c$8k_NAxm1^Y$&b`YVPTA_M}=&~<d!wT>+D{z~)Yb<<o1bP=V2m.G$
+ local-user carlos service-type ssh
+ local-user carlos level 3
+ local-user carlos state block fail-times 3 interval 5
+ local-user jhorge password irreversible-cipher $1c$.h3)SL@K!X$rR:>WFs:~:1z7"#~DI|GE,N'-dGH{"$2bQKk.!+P$
+ local-user jhorge service-type ssh
+ local-user jhorge level 3
+ local-user jhorge state block fail-times 3 interval 5
+ local-user jefferson password irreversible-cipher $1c$,D~ZBfwBg/$Lk5fWW`b<)^ML>XJ6)fL~LPfYY^om"rl_rHK&j,U$
+ local-user jefferson service-type ssh
+ local-user jefferson level 3
+ local-user jefferson state block fail-times 3 interval 5
+ local-user ixcradius password irreversible-cipher $1c$d`;~~u9WD9$7'bPL~893Bi'g>V(vZ(:HjHV=E7[^/_3SKTSjK[7$
+ local-user ixcradius service-type ssh
+ local-user ixcradius level 3
+ local-user ixcradius state block fail-times 3 interval 5
+ local-user sageuser password irreversible-cipher $1c$rOJn+yMNDK$}pZH(X%Qa5B|cS+GFO88C`~K%j}BG"|R~fG~0;)!$
+ local-user sageuser service-type ssh
+ local-user sageuser level 3
+ local-user sageuser state block fail-times 3 interval 5
+ local-user pronetworks password irreversible-cipher $1c$ZLQ4Q4[96P$G!QI$wF>(-K6FCH!mKv:b>8W9{+8MX;_oK/)):=B$
+ local-user pronetworks service-type ssh
+ local-user pronetworks level 3
+ local-user pronetworks state block fail-times 3 interval 5
+ local-user evocode password irreversible-cipher $1c$k+'SUG1*$8$EbqL#0]RA~XeS*$LR#o({e+I;h%$}<u_B30}hF':$
+ local-user evocode service-type ssh
+ local-user evocode level 3
+ local-user evocode state block fail-times 10 interval 1
+ local-user pronetworksftp password irreversible-cipher $1c$*9&|S\eh{A$frV5)s49@>s.2W#YCjFTe[~[.NA1mQp*o5M^F]K($
+ local-user pronetworksftp service-type ftp terminal ssh
+ local-user pronetworksftp level 3
+ local-user pronetworksftp state block fail-times 3 interval 5
+ local-user pronetworksftp ftp-directory cfcard:/
+ local-user joao.pronetworks password irreversible-cipher $1c$gQe.OvUv{+$VUdH)h{~}BxXao-!T&VKWW'cRf=.`Yh1l(HMrrO5$
+ local-user joao.pronetworks service-type ssh
+ local-user joao.pronetworks level 3
+ local-user joao.pronetworks state block fail-times 10 interval 1
+ local-user ixc-radius password irreversible-cipher $1c$7rGMN6nW'($MN9PHt"axDug@cS;_2[Bv0&~Y&Rd:OaiQT8PJ>UM$
+ local-user ixc-radius service-type ssh
+ local-user ixc-radius level 3
+ local-user ixc-radius state block fail-times 3 interval 5
+ local-user ixc-radius ftp-directory cfcard:
+ local-user netwest password irreversible-cipher $1c$FmR16Y;NC2$Q=U78&zKMI/|nN$t8]|SuhrH/)#s@NKXB~GW(M7>$
+ local-user netwest service-type ssh
+ local-user netwest level 3
+ local-user netwest state block fail-times 3 interval 5
+ local-user netwest ftp-directory cfcard:
+ local-user evoadm password irreversible-cipher $1c$xw`*/6&,67$be8"ECKGUT}0N)0uVdtK8H$G:{'hM+:,IyH/;@~0$
+ local-user evoadm service-type ssh
+ local-user evoadm level 3
+ local-user evoadm state block fail-times 3 interval 5
+ local-user evoadm ftp-directory cfcard:
+ #
+ authentication-scheme default0
+ #
+ authentication-scheme default1
+ #
+ authentication-scheme default
+  authentication-mode local radius
+ #
+ authentication-scheme radius
+ #
+ authentication-scheme ixcprovedor
+  authentication-mode radius local
+ #
+ authentication-scheme nw-group-ixc
+  authentication-mode radius local
+ #
+ authorization-scheme default
+ #
+ accounting-scheme default0
+ #
+ accounting-scheme default1
+ #
+ accounting-scheme radius
+  accounting interim interval 10
+  accounting send-update
+ #
+ accounting-scheme ixcprovedor
+  accounting interim interval 1200 second traffic hash
+  accounting send-update
+ #
+ accounting-scheme nw-group-ixc
+  accounting interim interval 1200 second traffic hash
+  accounting send-update
+ #
+ domain default0
+ #
+ domain default1
+ #
+ domain default_admin
+ #
+ domain netwest.com.br
+  authentication-scheme radius
+  accounting-scheme radius
+  radius-server group nw-pppoe
+  access-limit 22000
+  ip-pool pool_cgnat
+  dns primary-ip 170.78.36.25
+  dns second-ip 1.1.1.1
+  accounting-start-delay 2 online user-type ppp
+  qos rate-limit-mode car inbound
+  qos rate-limit-mode car outbound
+ #
+ domain netwestbloqueio.com.br
+  authentication-scheme radius
+  accounting-scheme radius
+  radius-server group nw-pppoe
+  ip-pool bloqueiov4
+  dns primary-ip 8.8.8.8
+  dns second-ip 8.8.4.4
+  accounting-start-delay 2 online user-type ppp
+  qos rate-limit-mode car inbound
+  qos rate-limit-mode car outbound
+ #
+ domain ixcprovedor
+  authentication-scheme ixcprovedor
+  accounting-scheme ixcprovedor
+  radius-server group ixcprovedor
+  access-limit 22000
+  ip-pool pool_cgnat
+  ipv6-pool prefix-wan
+  dns primary-ip 170.78.36.25
+  dns second-ip 8.8.8.8
+  dns primary-ipv6 2001:4860:4860::8888
+  dns second-ipv6 2001:4860:4860::8844
+  accounting-start-delay 10 online user-type ppp ipoe static
+  accounting dual-stack identical
+  user-basic-service-ip-type ipv4
+  ipv6 nd ra unicast
+  dhcp coa-zero-lease dual-cut
+  qos rate-limit-mode car inbound
+  qos rate-limit-mode car outbound
+#
+license
+ active port-basic slot 3 card 3 port 0-13
+#
+warranty
+#
+ospfv3 1
+ router-id 172.31.254.2
+ import-route direct
+ import-route static
+ import-route unr
+ area 0.0.0.0
+#
+interface Eth-Trunk1
+ description COMU-CISCO-40G
+ statistic enable
+#
+interface Eth-Trunk1.10
+ vlan-type dot1q 10
+ ip address 10.10.10.4 255.255.255.248
+#
+interface Eth-Trunk1.20
+ vlan-type dot1q 20
+ ip address 192.168.20.247 255.255.255.0
+#
+interface Eth-Trunk1.100
+ statistic enable
+ user-vlan 100
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.599
+ vlan-type dot1q 599
+ ipv6 enable
+ ip address 170.78.36.46 255.255.255.252
+ ipv6 address 2804:3534:4::2/48
+#
+interface Eth-Trunk1.1001
+ statistic enable
+ user-vlan 1001
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1002
+ statistic enable
+ user-vlan 1002
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1003
+ statistic enable
+ user-vlan 1003
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1004
+ statistic enable
+ user-vlan 1004
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1005
+ statistic enable
+ user-vlan 1005
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1006
+ statistic enable
+ user-vlan 1006
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1007
+ statistic enable
+ user-vlan 1007
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1008
+ statistic enable
+ user-vlan 1008
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1009
+ statistic enable
+ user-vlan 1009
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1010
+ statistic enable
+ user-vlan 1010
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1011
+ statistic enable
+ user-vlan 1011
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1012
+ statistic enable
+ user-vlan 1012
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1013
+ statistic enable
+ user-vlan 1013
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1014
+ statistic enable
+ user-vlan 1014
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1015
+ statistic enable
+ user-vlan 1015
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1016
+ statistic enable
+ user-vlan 1016
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1017
+ statistic enable
+ user-vlan 1017
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1018
+ statistic enable
+ user-vlan 1018
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1019
+ statistic enable
+ user-vlan 1019
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1020
+ statistic enable
+ user-vlan 1020
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1021
+ statistic enable
+ user-vlan 1021
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1022
+ statistic enable
+ user-vlan 1022
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1023
+ statistic enable
+ user-vlan 1023
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1024
+ statistic enable
+ user-vlan 1024
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1025
+ statistic enable
+ user-vlan 1025
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1026
+ statistic enable
+ user-vlan 1026
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1027
+ statistic enable
+ user-vlan 1027
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1028
+ statistic enable
+ user-vlan 1028
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1029
+ statistic enable
+ user-vlan 1029
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1030
+ statistic enable
+ user-vlan 1030
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1031
+ statistic enable
+ user-vlan 1031
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1032
+ statistic enable
+ user-vlan 1032
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1033
+ statistic enable
+ user-vlan 1033
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1034
+ statistic enable
+ user-vlan 1034
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1035
+ statistic enable
+ user-vlan 1035
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1036
+ statistic enable
+ user-vlan 1036
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1037
+ statistic enable
+ user-vlan 1037
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1038
+ statistic enable
+ user-vlan 1038
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1039
+ statistic enable
+ user-vlan 1039
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1040
+ statistic enable
+ user-vlan 1040
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1041
+ statistic enable
+ user-vlan 1041
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1042
+ statistic enable
+ user-vlan 1042
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1043
+ statistic enable
+ user-vlan 1043
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1044
+ statistic enable
+ user-vlan 1044
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1045
+ statistic enable
+ user-vlan 1045
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.1050
+ statistic enable
+ user-vlan 1050
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1051
+ statistic enable
+ user-vlan 1051
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.1052
+ statistic enable
+ user-vlan 1052
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.1100
+ statistic enable
+ user-vlan 1100
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1200
+ statistic enable
+ user-vlan 1200
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1250
+ statistic enable
+ user-vlan 1250
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.1251
+ statistic enable
+ user-vlan 1251
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.1252
+ statistic enable
+ user-vlan 1252
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.1300
+ statistic enable
+ user-vlan 1300
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.1400
+ statistic enable
+ user-vlan 1400
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2001
+ statistic enable
+ user-vlan 2001
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2002
+ statistic enable
+ user-vlan 2002
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.2003
+ statistic enable
+ user-vlan 2003
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.2004
+ statistic enable
+ user-vlan 2004
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.2005
+ statistic enable
+ user-vlan 2005
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.2006
+ statistic enable
+ user-vlan 2006
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2007
+ statistic enable
+ user-vlan 2007
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2008
+ statistic enable
+ user-vlan 2008
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2009
+ statistic enable
+ user-vlan 2009
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2010
+ statistic enable
+ user-vlan 2010
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2011
+ statistic enable
+ user-vlan 2011
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2012
+ statistic enable
+ user-vlan 2012
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2013
+ statistic enable
+ user-vlan 2013
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2014
+ statistic enable
+ user-vlan 2014
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2015
+ statistic enable
+ user-vlan 2015
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2016
+ statistic enable
+ user-vlan 2016
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2017
+ statistic enable
+ user-vlan 2017
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2018
+ statistic enable
+ user-vlan 2018
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2019
+ statistic enable
+ user-vlan 2019
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2020
+ statistic enable
+ user-vlan 2020
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2021
+ statistic enable
+ user-vlan 2021
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2022
+ statistic enable
+ user-vlan 2022
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2023
+ statistic enable
+ user-vlan 2023
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2024
+ statistic enable
+ user-vlan 2024
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2025
+ statistic enable
+ user-vlan 2025
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2026
+ statistic enable
+ user-vlan 2026
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2027
+ statistic enable
+ user-vlan 2027
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2028
+ statistic enable
+ user-vlan 2028
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2029
+ statistic enable
+ user-vlan 2029
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2030
+ statistic enable
+ user-vlan 2030
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2031
+ statistic enable
+ user-vlan 2031
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2032
+ statistic enable
+ user-vlan 2032
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2033
+ statistic enable
+ user-vlan 2033
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2034
+ statistic enable
+ user-vlan 2034
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2035
+ statistic enable
+ user-vlan 2035
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2036
+ statistic enable
+ user-vlan 2036
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2037
+ statistic enable
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2038
+ statistic enable
+ user-vlan 2038
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2039
+ statistic enable
+ user-vlan 2039
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2040
+ statistic enable
+ user-vlan 2040
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2041
+ statistic enable
+ user-vlan 2041
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2042
+ statistic enable
+ user-vlan 2042
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2043
+ statistic enable
+ user-vlan 2043
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2044
+ statistic enable
+ user-vlan 2044
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2045
+ statistic enable
+ user-vlan 2045
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2100
+ statistic enable
+ user-vlan 2100
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2200
+ statistic enable
+ user-vlan 2200
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2300
+ statistic enable
+ user-vlan 2300
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.2400
+ statistic enable
+ user-vlan 2400
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.3001
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3001
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3002
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3002
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3003
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3003
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3004
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3004
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3005
+ statistic enable
+ user-vlan 3005
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3006
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3006
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3007
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3007
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3008
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3008
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3009
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3009
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3010
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3010
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3011
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3011
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3012
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3012
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3013
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3013
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3014
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3014
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3015
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3015
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3016
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3016
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3017
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3017
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3018
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3018
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3019
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3019
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3020
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3020
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3021
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3021
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3022
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3022
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3023
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3023
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3024
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3024
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3025
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3025
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3026
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3026
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3027
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3027
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3028
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3028
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3029
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3029
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3030
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3030
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3031
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3031
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3032
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3032
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3033
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3033
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3034
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3034
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3035
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3035
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3036
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3036
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3037
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3037
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3038
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3038
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3039
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3039
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3040
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3040
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3041
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3041
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3042
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3042
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3043
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3043
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3044
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3044
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3045
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3045
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3046
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3046
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3047
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3047
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3048
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3048
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3049
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3049
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3050
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3050
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3051
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3051
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3052
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3052
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3053
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3053
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3054
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3054
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3055
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3055
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3056
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3056
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3100
+ statistic enable
+ user-vlan 3100
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3200
+ statistic enable
+ user-vlan 3200
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3300
+ statistic enable
+ user-vlan 3300
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3310
+ statistic enable
+ user-vlan 3310
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3400
+ statistic enable
+ user-vlan 3400
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface Eth-Trunk1.3410
+ statistic enable
+ user-vlan 3410
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface Eth-Trunk1.4059
+ vlan-type dot1q 4059
+ description COMU-CGNAT-02-IPV6
+ ipv6 enable
+ ipv6 address 2804:3534:1C0::9/126
+ statistic enable
+ ospfv3 1 area 0.0.0.0
+ ospfv3 network-type p2p
+#
+interface Eth-Trunk1.4060
+ vlan-type dot1q 4060
+ description COMU-CGNAT-02-IPV4
+ ip address 172.31.255.9 255.255.255.252
+ statistic enable
+ ospf network-type p2p
+ ospf enable 1 area 0.0.0.0
+#
+interface Eth-Trunk1.4062
+ vlan-type dot1q 4062
+ description COMU-BRAS-CGNAT-01-IPv4
+ ip address 172.31.255.5 255.255.255.252
+ statistic enable
+ ospf network-type p2p
+ ospf enable 1 area 0.0.0.0
+#
+interface Eth-Trunk1.4063
+ vlan-type dot1q 4063
+ description COMU-BRAS-BGP-IPv6
+ ipv6 enable
+ ipv6 address 2804:3534:1C0::2/126
+ statistic enable
+ ospfv3 1 area 0.0.0.0
+ ospfv3 network-type p2p
+#
+interface Eth-Trunk1.4064
+ vlan-type dot1q 4064
+ description COMU-BRAS-BGP-IPv4
+ ip address 172.31.255.2 255.255.255.252
+ statistic enable
+ ospf network-type p2p
+ ospf enable 1 area 0.0.0.0
+#
+interface Virtual-Template0
+ ppp authentication-mode auto
+#
+interface Virtual-Template1
+ ip address unnumbered interface LoopBack1
+ ppp authentication-mode pap chap
+ ppp keepalive interval 30 retransmit 3 datacheck
+ pppoe-server ac-name NAS-HUAWEI
+ ip urpf strict enable check subnet
+#
+interface GigabitEthernet0/0/0
+ speed auto
+ duplex auto
+ undo shutdown
+ ip binding vpn-instance __LOCAL_OAM_VPN__
+ ip address 192.168.200.223 255.255.255.0
+#
+interface GigabitEthernet0/3/4
+ undo shutdown
+ undo dcn
+#
+interface GigabitEthernet0/3/5
+ undo shutdown
+ undo dcn
+#
+interface GigabitEthernet0/3/6
+ undo shutdown
+ undo dcn
+#
+interface GigabitEthernet0/3/7
+ shutdown
+ undo dcn
+#
+interface GigabitEthernet0/3/8
+ undo shutdown
+#
+interface GigabitEthernet0/3/9
+ undo shutdown
+#
+interface GigabitEthernet0/3/10
+ undo shutdown
+#
+interface GigabitEthernet0/3/11
+ undo shutdown
+#
+interface GigabitEthernet0/3/12
+ undo shutdown
+#
+interface GigabitEthernet0/3/13
+ undo shutdown
+#
+interface GigabitEthernet0/3/14
+ undo shutdown
+#
+interface GigabitEthernet0/3/15
+ undo shutdown
+#
+interface GigabitEthernet0/3/16
+ undo shutdown
+#
+interface GigabitEthernet0/3/17
+ undo shutdown
+#
+interface GigabitEthernet0/3/18
+ undo shutdown
+#
+interface GigabitEthernet0/3/19
+ undo shutdown
+#
+interface GigabitEthernet0/3/20
+ undo shutdown
+#
+interface GigabitEthernet0/3/21
+ undo shutdown
+#
+interface GigabitEthernet0/3/22
+ undo shutdown
+#
+interface GigabitEthernet0/3/23
+ undo shutdown
+#
+interface 100GE0/3/0
+ undo shutdown
+ undo dcn
+#
+interface 100GE0/3/0.100
+ statistic enable
+ user-vlan 100
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1001
+ statistic enable
+ user-vlan 1001
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1002
+ statistic enable
+ user-vlan 1002
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1003
+ statistic enable
+ user-vlan 1003
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1004
+ statistic enable
+ user-vlan 1004
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1005
+ statistic enable
+ user-vlan 1005
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1006
+ statistic enable
+ user-vlan 1006
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1007
+ statistic enable
+ user-vlan 1007
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1008
+ statistic enable
+ user-vlan 1008
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1009
+ statistic enable
+ user-vlan 1009
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1010
+ statistic enable
+ user-vlan 1010
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1011
+ statistic enable
+ user-vlan 1011
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1012
+ statistic enable
+ user-vlan 1012
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1013
+ statistic enable
+ user-vlan 1013
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1014
+ statistic enable
+ user-vlan 1014
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1015
+ statistic enable
+ user-vlan 1015
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1016
+ statistic enable
+ user-vlan 1016
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1017
+ statistic enable
+ user-vlan 1017
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1018
+ statistic enable
+ user-vlan 1018
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1019
+ statistic enable
+ user-vlan 1019
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1020
+ statistic enable
+ user-vlan 1020
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1021
+ statistic enable
+ user-vlan 1021
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1022
+ statistic enable
+ user-vlan 1022
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1023
+ statistic enable
+ user-vlan 1023
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1024
+ statistic enable
+ user-vlan 1024
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1025
+ statistic enable
+ user-vlan 1025
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1026
+ statistic enable
+ user-vlan 1026
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1027
+ statistic enable
+ user-vlan 1027
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1028
+ statistic enable
+ user-vlan 1028
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1029
+ statistic enable
+ user-vlan 1029
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1030
+ statistic enable
+ user-vlan 1030
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1031
+ statistic enable
+ user-vlan 1031
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1032
+ statistic enable
+ user-vlan 1032
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1033
+ statistic enable
+ user-vlan 1033
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1034
+ statistic enable
+ user-vlan 1034
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1035
+ statistic enable
+ user-vlan 1035
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1036
+ statistic enable
+ user-vlan 1036
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1037
+ statistic enable
+ user-vlan 1037
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1038
+ statistic enable
+ user-vlan 1038
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1039
+ statistic enable
+ user-vlan 1039
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1040
+ statistic enable
+ user-vlan 1040
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1041
+ statistic enable
+ user-vlan 1041
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1042
+ statistic enable
+ user-vlan 1042
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1043
+ statistic enable
+ user-vlan 1043
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1044
+ statistic enable
+ user-vlan 1044
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1045
+ statistic enable
+ user-vlan 1045
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.1050
+ statistic enable
+ user-vlan 1050
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1051
+ statistic enable
+ user-vlan 1051
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.1052
+ statistic enable
+ user-vlan 1052
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.1100
+ statistic enable
+ user-vlan 1100
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1200
+ statistic enable
+ user-vlan 1200
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1250
+ statistic enable
+ user-vlan 1250
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.1251
+ statistic enable
+ user-vlan 1251
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.1252
+ statistic enable
+ user-vlan 1252
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.1300
+ statistic enable
+ user-vlan 1300
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.1400
+ statistic enable
+ user-vlan 1400
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2001
+ statistic enable
+ user-vlan 2001
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2002
+ statistic enable
+ user-vlan 2002
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.2003
+ statistic enable
+ user-vlan 2003
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.2004
+ statistic enable
+ user-vlan 2004
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.2005
+ statistic enable
+ user-vlan 2005
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.2006
+ statistic enable
+ user-vlan 2006
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2007
+ statistic enable
+ user-vlan 2007
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2008
+ statistic enable
+ user-vlan 2008
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2009
+ statistic enable
+ user-vlan 2009
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2010
+ statistic enable
+ user-vlan 2010
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2011
+ statistic enable
+ user-vlan 2011
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2012
+ statistic enable
+ user-vlan 2012
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2013
+ statistic enable
+ user-vlan 2013
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2014
+ statistic enable
+ user-vlan 2014
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2015
+ statistic enable
+ user-vlan 2015
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2016
+ statistic enable
+ user-vlan 2016
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2017
+ statistic enable
+ user-vlan 2017
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2018
+ statistic enable
+ user-vlan 2018
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2019
+ statistic enable
+ user-vlan 2019
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2020
+ statistic enable
+ user-vlan 2020
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2021
+ statistic enable
+ user-vlan 2021
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2022
+ statistic enable
+ user-vlan 2022
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2023
+ statistic enable
+ user-vlan 2023
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2024
+ statistic enable
+ user-vlan 2024
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2025
+ statistic enable
+ user-vlan 2025
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2026
+ statistic enable
+ user-vlan 2026
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2027
+ statistic enable
+ user-vlan 2027
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2028
+ statistic enable
+ user-vlan 2028
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2029
+ statistic enable
+ user-vlan 2029
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2030
+ statistic enable
+ user-vlan 2030
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2031
+ statistic enable
+ user-vlan 2031
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2032
+ statistic enable
+ user-vlan 2032
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2033
+ statistic enable
+ user-vlan 2033
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2034
+ statistic enable
+ user-vlan 2034
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2035
+ statistic enable
+ user-vlan 2035
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2036
+ statistic enable
+ user-vlan 2036
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2037
+ statistic enable
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2038
+ statistic enable
+ user-vlan 2038
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2039
+ statistic enable
+ user-vlan 2039
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2040
+ statistic enable
+ user-vlan 2040
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2041
+ statistic enable
+ user-vlan 2041
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2042
+ statistic enable
+ user-vlan 2042
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2043
+ statistic enable
+ user-vlan 2043
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2044
+ statistic enable
+ user-vlan 2044
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2045
+ statistic enable
+ user-vlan 2045
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2100
+ statistic enable
+ user-vlan 2100
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2200
+ statistic enable
+ user-vlan 2200
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2300
+ statistic enable
+ user-vlan 2300
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.2400
+ statistic enable
+ user-vlan 2400
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/0.3001
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3001
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3002
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3002
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3003
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3003
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3004
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3004
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3005
+ statistic enable
+ user-vlan 3005
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3006
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3006
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3007
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3007
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3008
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3008
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3009
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3009
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3010
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3010
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3011
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3011
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3012
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3012
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3013
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3013
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3014
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3014
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3015
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3015
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3016
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3016
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3017
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3017
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3018
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3018
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3019
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3019
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3020
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3020
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3021
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3021
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3022
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3022
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3023
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3023
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3024
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3024
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3025
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3025
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3026
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3026
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3027
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3027
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3028
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3028
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3029
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3029
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3030
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3030
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3031
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3031
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3032
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3032
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3033
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3033
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3034
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3034
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3035
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3035
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3036
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3036
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3037
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3037
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3038
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3038
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3039
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3039
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3040
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3040
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3041
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3041
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3042
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3042
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3043
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3043
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3044
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3044
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3045
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3045
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3046
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3046
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3047
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3047
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3048
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3048
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3049
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3049
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3050
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3050
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3051
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3051
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3052
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3052
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3053
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3053
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3054
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3054
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3055
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3055
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3056
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3056
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3100
+ statistic enable
+ user-vlan 3100
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3200
+ statistic enable
+ user-vlan 3200
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3300
+ statistic enable
+ user-vlan 3300
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3310
+ statistic enable
+ user-vlan 3310
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3400
+ statistic enable
+ user-vlan 3400
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force ixcprovedor
+ #
+#
+interface 100GE0/3/0.3410
+ statistic enable
+ user-vlan 3410
+ pppoe-server bind Virtual-Template 1
+ bas
+ #
+  access-type layer2-subscriber default-domain authentication force netwest.com.br
+ #
+#
+interface 100GE0/3/1
+ undo shutdown
+ eth-trunk 1
+ undo dcn
+#
+interface 100GE0/3/2
+ undo shutdown
+ undo dcn
+#
+interface 100GE0/3/2.3044
+ ipv6 enable
+ ipv6 address auto link-local
+ statistic enable
+ user-vlan 3044
+ pppoe-server bind Virtual-Template 1
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ bas
+#
+interface 100GE0/3/3
+ undo shutdown
+ undo dcn
+#
+interface LoopBack0
+ ip address 172.31.254.2 255.255.255.255
+#
+interface LoopBack1
+#
+interface Virtual-Ethernet0/2/100
+ ve-group 100 l2-terminate
+#
+interface Virtual-Ethernet0/2/100.150
+ vlan-type dot1q 150
+#
+interface Virtual-Ethernet0/2/101
+ ve-group 100 l3-access
+ mac-address aaaa-c1d1-e1f5
+#
+interface Virtual-Ethernet0/2/101.150
+ vlan-type dot1q 150
+ ip address 10.150.150.1 255.255.255.252
+#
+interface Virtual-Ethernet0/2/200
+ ve-group 200 l2-terminate
+#
+interface Virtual-Ethernet0/2/200.150
+ vlan-type dot1q 150
+#
+interface Virtual-Ethernet0/2/201
+ ve-group 200 l3-access
+ mac-address aaaa-c1d1-e1f6
+#
+interface Virtual-Ethernet0/2/201.150
+ vlan-type dot1q 150
+ ip address unnumbered interface Virtual-Ethernet0/2/101.150
+ statistic enable
+#
+interface NULL0
+#
+radius-server source interface LoopBack1
+#
+ccc ALCA_ADMIN_UPLOAD interface Virtual-Ethernet0/2/100.150 tagged out-interface Virtual-Ethernet0/2/200.150 tagged
+#
+bgp 266274
+ private-4-byte-as disable
+ peer 10.10.10.6 as-number 266274
+ #
+ ipv4-family unicast
+  undo synchronization
+  nexthop recursive-lookup non-critical-event delay 0
+  peer 10.10.10.6 enable
+  peer 10.10.10.6 route-policy NEGA-TUDO import
+  peer 10.10.10.6 route-policy NEGA-TUDO export
+ #
+ ipv4-family flow
+  peer 10.10.10.6 enable
+#
+bgp path-attribute attr-set accept-zero-value
+bgp path-attribute community accept-zero-length
+bgp path-attribute ext-community accept-zero-length
+bgp path-attribute ipv6-ext-community accept-zero-length
+bgp path-attribute large-community accept-zero-length
+bgp path-attribute attr-set accept-zero-length
+bgp path-attribute wide-community accept-zero-length
+#
+ospf 1 router-id 172.31.254.2
+ import-route direct
+ import-route static
+ import-route unr
+ opaque-capability enable
+ area 0.0.0.0
+  network 172.31.255.4 0.0.0.3
+#
+undo dcn
+#
+route-policy NEGA-TUDO deny node 0
+#
+arp static 10.150.150.2 aaaa-c1d1-e1f6 vid 150 interface Virtual-Ethernet0/2/101.150
+#
+ip route-static 192.168.200.0 255.255.255.0 192.168.20.1
+#
+snmp-agent
+snmp-agent acl SNMP-basic
+snmp-agent local-engineid 800007DB03FC1BD1AFA3C8
+snmp-agent community read cipher %^%#AF]E3c{~Q2&.-{8or!Y8<A{;(VTwrLcOCW~zl%87^lrU:C]`r27)CxFr$F$;ty\DY`d3!Sb~kq7Bu|oC%^%# alias __CommunityAliasName_01_14496
+#
+snmp-agent sys-info version v2c v3
+#
+snmp-agent protocol source-status all-interface
+snmp-agent protocol source-status ipv6 all-interface
+#
+undo snmp-agent proxy protocol source-status all-interface
+undo snmp-agent proxy protocol source-status ipv6 all-interface
+#
+undo snmp-agent trap enable feature-name system trap-name hwSysClockChangedNotification
+snmp-agent trap enable feature-name pim trap-name interface-election
+#
+lldp enable
+#
+web-auth-server version v2 v1
+#
+undo web-auth-server source-ip all
+#
+undo web-auth-server source-ipv6 all
+#
+stelnet server enable
+sftp server enable
+snetconf server enable
+ssh user evoadm
+ssh user evoadm authentication-type password
+ssh user evoadm service-type all
+ssh user ixc-radius
+ssh user ixc-radius authentication-type password
+ssh user ixc-radius service-type all
+ssh user joao.pronetworks
+ssh user joao.pronetworks authentication-type all
+ssh user joao.pronetworks assign rsa-key joao-key
+ssh user joao.pronetworks service-type stelnet
+ssh user netwest
+ssh user netwest authentication-type password
+ssh user netwest service-type all
+ssh user root
+ssh user root authentication-type password
+ssh user root service-type snetconf stelnet
+ssh server-source all-interface
+ssh ipv6 server-source all-interface
+ssh authorization-type default aaa
+#
+ssh server cipher aes256_gcm aes128_gcm aes256_ctr aes192_ctr aes128_ctr
+ssh server hmac sha2_512 sha2_256
+ssh server key-exchange dh_group_exchange_sha256 dh_group_exchange_sha1 dh_group14_sha1 ecdh_sha2_nistp256 ecdh_sha2_nistp384 ecdh_sha2_nistp521 dh_group16_sha512
+#
+ssh server publickey ecc rsa rsa_sha2_256 rsa_sha2_512
+#
+ssh server dh-exchange min-len 2048
+#
+ssh client publickey ecc rsa rsa_sha2_256 rsa_sha2_512
+#
+ssh client cipher aes256_gcm aes128_gcm aes256_ctr aes192_ctr aes128_ctr
+ssh client hmac sha2_512 sha2_256
+ssh client key-exchange dh_group_exchange_sha256 dh_group_exchange_sha1 dh_group14_sha1 ecdh_sha2_nistp256 ecdh_sha2_nistp384 ecdh_sha2_nistp521 dh_group16_sha512
+#
+traffic-policy P-CGNAT inbound global-acl
+#
+user-interface maximum-vty 21
+#
+user-interface con 0
+ authentication-mode password
+ set authentication password cipher $1c$R)p}'\a$"<$bK$:MOKQ2"[c]xQ20U4)$;IwAd#,X!\e4!.k{U+J$
+#
+user-interface vty 0 4
+ authentication-mode aaa
+ protocol inbound ssh
+#
+netconf
+ activate module huawei-ip
+#
+local-aaa-server
+ local-bill cfcard backup-mode tftp
+#
+pki domain default
+#
+evpn srv6 next-header-field 59
+#
+undo evpn-route-origin igp
+#
+l2tp-group default-lac
+ tunnel name HUAWEI
+#
+l2tp-group default-lns
+ tunnel name HUAWEI
+#
+return
