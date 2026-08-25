@@ -30,6 +30,11 @@ MARCA_FIM = "===== FIM ====="
 # cola tudo de uma vez.
 SCRIPT = r'''sudo bash -s <<'RBLSCAN_EOF'
 set -u
+# /usr/sbin nao entra no PATH de usuario comum no Debian, e e la que ficam
+# named-checkconf e pdnsutil. Sem isto a deteccao falha num servidor que TEM
+# BIND instalado e rodando.
+PATH="/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:$PATH"
+export PATH
 OUT=/tmp/rbl-dns-coleta.txt
 : > "$OUT"
 
@@ -39,11 +44,19 @@ say "##### RBLSCAN-COLETA v1"
 say "##### HOST: $(hostname -f 2>/dev/null || hostname)"
 say "##### DATA: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
 
+# Deteccao por binario e, se falhar, por diretorio de configuracao. Servidor
+# com o pacote instalado de forma nao padrao ainda tem /etc/bind no lugar.
 SERVIDOR=desconhecido
 command -v named-checkconf >/dev/null 2>&1 && SERVIDOR=bind
 command -v pdnsutil        >/dev/null 2>&1 && SERVIDOR=powerdns
 command -v pdns_control    >/dev/null 2>&1 && SERVIDOR=powerdns
+if [ "$SERVIDOR" = desconhecido ]; then
+  [ -d /etc/bind ]     && SERVIDOR=bind
+  [ -d /etc/powerdns ] && SERVIDOR=powerdns
+  [ -d /etc/pdns ]     && SERVIDOR=powerdns
+fi
 say "##### SERVIDOR: $SERVIDOR"
+say "##### ESCUTANDO: $(ss -lnu 2>/dev/null | grep -c ':53 ') socket(s) na porta 53"
 
 dump() {   # dump <rotulo> <caminho>
   [ -r "$2" ] || return 0
@@ -66,7 +79,11 @@ if [ "$SERVIDOR" = bind ]; then
 
   say ""
   say "##### CHECKCONF"
-  named-checkconf -p >> "$OUT" 2>&1 || say "(named-checkconf falhou)"
+  if command -v named-checkconf >/dev/null 2>&1; then
+    named-checkconf -p >> "$OUT" 2>&1 || say "(named-checkconf falhou)"
+  else
+    say "(named-checkconf nao encontrado; zonas serao procuradas em /etc/bind)"
+  fi
   say "##### FIM CHECKCONF"
 
   # A lista de zonas sai do checkconf, que ja resolveu os include e o
@@ -89,6 +106,24 @@ if [ "$SERVIDOR" = bind ]; then
           "$caminho" >> "$OUT" 2>/dev/null
       say "===== FIM ====="
     done
+
+  # Rede de seguranca: se nada saiu do checkconf, le os arquivos de zona
+  # direto do disco. Melhor entregar as zonas sem o mapeamento do named.conf
+  # do que entregar um arquivo vazio.
+  if ! grep -q '^===== ZONA:' "$OUT"; then
+    say ""
+    say "##### AVISO: nenhuma zona veio do named.conf; lendo /etc/bind direto."
+    for arq in /etc/bind/db.* /etc/bind/zones/* /var/lib/bind/* /var/cache/bind/*; do
+      [ -f "$arq" ] || continue
+      case "$arq" in *.jnl|*.signed|*.jbk|*.key|*.private) continue ;; esac
+      grep -qiE '[[:space:]](SOA|PTR|IN)[[:space:]]' "$arq" 2>/dev/null || continue
+      say ""
+      say "===== ARQUIVO: $arq ====="
+      sed -e '/[[:space:]]DNSKEY[[:space:]]/d' -e '/[[:space:]]RRSIG[[:space:]]/d' \
+          "$arq" >> "$OUT" 2>/dev/null
+      say "===== FIM ====="
+    done
+  fi
 
 elif [ "$SERVIDOR" = powerdns ]; then
   for f in /etc/powerdns/pdns.conf /etc/pdns/pdns.conf; do
