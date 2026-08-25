@@ -1533,3 +1533,19 @@ body,
   font-size: 11.5px;
   color: var(--warn);
 }
+
+/* O comando em base64 é uma linha muito longa: quebrar para caber e usar
+   fonte menor, senão vira uma faixa ilegível de 4700 caracteres. */
+.coleta-b64 {
+  word-break: break-all;
+  white-space: pre-wrap;
+  font-size: 10px;
+  line-height: 1.4;
+  max-height: 150px;
+}
+
+.coleta-opcoes {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}

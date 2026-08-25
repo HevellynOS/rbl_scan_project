@@ -18,6 +18,7 @@ export default function DnsConfigCheck() {
   const [open, setOpen] = useState<string | null>(null);
   const [help, setHelp] = useState<ColetaHelp | null>(null);
   const [semSudo, setSemSudo] = useState(false);
+  const [legivel, setLegivel] = useState(false);
   const [copiado, setCopiado] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -94,27 +95,38 @@ export default function DnsConfigCheck() {
                           type="button"
                           className="link"
                           onClick={() =>
-                            copiar(
-                              i === 1 && semSudo ? help.script_sem_sudo : p.comando,
-                              p.titulo
-                            )
+                            copiar(i === 1 ? comandoColeta(help, semSudo, legivel) : p.comando,
+                                   p.titulo)
                           }
                         >
                           {copiado === p.titulo ? "copiado" : "copiar"}
                         </button>
                       </div>
-                      <pre className="cmds coleta-cmd">
-                        {i === 1 && semSudo ? help.script_sem_sudo : p.comando}
+                      <pre className={`cmds coleta-cmd${i === 1 && !legivel ? " coleta-b64" : ""}`}>
+                        {i === 1 ? comandoColeta(help, semSudo, legivel) : p.comando}
                       </pre>
                       {i === 1 && (
-                        <label className="check coleta-check">
-                          <input
-                            type="checkbox"
-                            checked={semSudo}
-                            onChange={(e) => setSemSudo(e.target.checked)}
-                          />
-                          Usuário sem sudo
-                        </label>
+                        <div className="coleta-opcoes">
+                          <label className="check coleta-check">
+                            <input
+                              type="checkbox"
+                              checked={semSudo}
+                              onChange={(e) => setSemSudo(e.target.checked)}
+                            />
+                            Usuário sem sudo
+                          </label>
+                          <label className="check coleta-check">
+                            <input
+                              type="checkbox"
+                              checked={legivel}
+                              onChange={(e) => setLegivel(e.target.checked)}
+                            />
+                            Ver o script legível
+                          </label>
+                        </div>
+                      )}
+                      {i === 1 && legivel && (
+                        <p className="fix-nota">{help.nota_formato}</p>
                       )}
                     </>
                   )}
@@ -353,6 +365,13 @@ export default function DnsConfigCheck() {
       )}
     </>
   );
+}
+
+function comandoColeta(help: ColetaHelp, semSudo: boolean, legivel: boolean): string {
+  if (legivel) {
+    return semSudo ? help.script_legivel_sem_sudo : help.script_legivel;
+  }
+  return semSudo ? help.script_sem_sudo : help.script;
 }
 
 function Achado({

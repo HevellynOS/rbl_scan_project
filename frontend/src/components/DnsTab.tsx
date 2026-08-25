@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Report } from "../types";
 import { ZoneBuilder } from "./Correlate";
+import DnsConfigCheck from "./DnsConfigCheck";
 
 /**
  * Aba DNS. Reúne tudo que depende do DNS reverso: auditoria de PTR, estado da
@@ -11,14 +12,20 @@ import { ZoneBuilder } from "./Correlate";
  */
 export default function DnsTab({ report }: { report: Report | null }) {
   if (!report) {
+    // A validação de arquivo de zona não depende de varredura: é auditoria
+    // sobre a configuração, não sobre o que está publicado.
     return (
-      <section className="panel panel-wide">
-        <h2 className="eyebrow">DNS reverso</h2>
-        <p className="empty">
-          Rode a varredura de um bloco primeiro. A auditoria de PTR e a
-          verificação de delegação acontecem junto com ela.
-        </p>
-      </section>
+      <>
+        <section className="panel panel-wide">
+          <h2 className="eyebrow">DNS reverso publicado</h2>
+          <p className="empty">
+            Rode a varredura de um bloco para ver o estado do que está no ar. A
+            auditoria de PTR e a verificação de delegação acontecem junto com
+            ela.
+          </p>
+        </section>
+        <DnsConfigCheck />
+      </>
     );
   }
 
@@ -167,6 +174,7 @@ export default function DnsTab({ report }: { report: Report | null }) {
         </section>
       )}
 
+      <DnsConfigCheck />
       <RelatorioPdf report={report} />
       <ZoneBuilder cidr={report.network} />
     </>

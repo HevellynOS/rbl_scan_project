@@ -133,6 +133,29 @@ SCRIPT_SEM_SUDO = SCRIPT.replace("sudo bash -s <<'RBLSCAN_EOF'",
                                  "bash -s <<'RBLSCAN_EOF'")
 
 
+def _corpo() -> str:
+    """Só o script, sem o invólucro de heredoc."""
+    return SCRIPT.split("\n", 1)[1].rsplit("RBLSCAN_EOF", 1)[0]
+
+
+def _uma_linha(sudo: bool = True) -> str:
+    """Comando em UMA linha, com o script codificado em base64.
+
+    Heredoc colado em terminal é frágil: o cliente de SSH pode acrescentar
+    caractere no fim, quebrar a linha do terminador, ou expandir algo no meio
+    do texto. Quando isso acontece o shell fica preso esperando o terminador,
+    que foi o que ocorreu em campo com o MobaXterm.
+
+    Base64 elimina a classe inteira de problema: é uma linha só, sem aspas,
+    sem cifrão, sem crase e sem til. Se um caractere se perder no caminho, o
+    'base64 -d' falha na hora em vez de executar um script truncado.
+    """
+    import base64
+    b64 = base64.b64encode(_corpo().encode("utf-8")).decode("ascii")
+    destino = "sudo bash" if sudo else "bash"
+    return f"echo {b64} | base64 -d | {destino}"
+
+
 PASSOS = [
     {
         "titulo": "Acesse o servidor de DNS por SSH",
@@ -143,11 +166,11 @@ PASSOS = [
     },
     {
         "titulo": "Cole o comando de coleta",
-        "detalhe": "Cole o bloco inteiro de uma vez, incluindo a última linha. "
-                   "O comando apenas lê arquivos: não altera configuração nem "
-                   "recarrega o serviço. Chaves de DNSSEC e TSIG e senha de "
-                   "banco são omitidas do arquivo gerado.",
-        "comando": SCRIPT,
+        "detalhe": "É uma linha só: cole e pressione Enter. O comando apenas "
+                   "lê arquivos, não altera configuração nem recarrega o "
+                   "serviço. Chaves de DNSSEC e TSIG e senha de banco são "
+                   "omitidas do arquivo gerado.",
+        "comando": "",   # preenchido em instrucoes(), que gera o base64
     },
     {
         "titulo": "Traga o arquivo para a sua máquina",
@@ -166,16 +189,25 @@ PASSOS = [
 
 
 def instrucoes() -> dict:
+    passos = [dict(p) for p in PASSOS]
+    passos[1]["comando"] = _uma_linha(sudo=True)
     return {
         "versao": FORMATO_VERSAO,
         "arquivo": "/tmp/rbl-dns-coleta.txt",
-        "passos": PASSOS,
-        "script": SCRIPT,
-        "script_sem_sudo": SCRIPT_SEM_SUDO,
+        "passos": passos,
+        "script": _uma_linha(sudo=True),
+        "script_sem_sudo": _uma_linha(sudo=False),
+        "script_legivel": SCRIPT,
+        "script_legivel_sem_sudo": SCRIPT_SEM_SUDO,
         "nota_sudo": "Se o usuário não tiver sudo, use a variante sem sudo. "
                      "Ela funciona quando os arquivos de zona são legíveis pelo "
                      "usuário, o que é comum quando o técnico está no grupo "
                      "bind.",
+        "nota_formato": "O comando vai em base64 numa linha só porque heredoc "
+                        "colado em terminal quebra com facilidade: basta o "
+                        "cliente de SSH acrescentar um caractere no fim para o "
+                        "shell ficar preso esperando o terminador. Se preferir "
+                        "revisar antes de rodar, use a versão legível.",
         "seguranca": "O script é somente leitura. Ele remove do arquivo as "
                      "chaves TSIG e DNSSEC e as senhas de banco antes de gravar, "
                      "porque o arquivo costuma ser enviado por e-mail.",

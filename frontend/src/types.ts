@@ -269,7 +269,10 @@ export interface ColetaHelp {
   passos: ColetaPasso[];
   script: string;
   script_sem_sudo: string;
+  script_legivel: string;
+  script_legivel_sem_sudo: string;
   nota_sudo: string;
+  nota_formato: string;
   seguranca: string;
 }
 

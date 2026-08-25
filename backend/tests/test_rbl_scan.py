@@ -420,12 +420,30 @@ def test_remediacao_usa_o_caminho_real_do_arquivo():
 def test_coletor_e_leitor_na_mesma_versao():
     """Se o formato mudar sem o leitor acompanhar, a análise sairia errada em
     silêncio."""
-    assert instrucoes()["versao"] == "1"
-    assert "RBLSCAN-COLETA v1" in instrucoes()["script"]
+    i = instrucoes()
+    assert i["versao"] == "1"
+    assert "RBLSCAN-COLETA v1" in i["script_legivel"]
+
+
+def test_comando_de_coleta_cabe_em_uma_linha():
+    """Regressão de campo: o heredoc quebrou no MobaXterm porque o cliente
+    acrescentou um caractere no fim do terminador, e o shell ficou preso
+    esperando. Base64 numa linha só elimina a classe de problema."""
+    import base64
+    import re
+
+    cmd = instrucoes()["script"]
+    assert "\n" not in cmd
+    for ch in ("~", "`", '"', "'"):
+        assert ch not in cmd, f"caractere que o terminal costuma alterar: {ch}"
+    b64 = re.search(r"echo (\S+) \|", cmd).group(1)
+    corpo = base64.b64decode(b64).decode("utf-8")
+    assert "RBLSCAN-COLETA v1" in corpo
+    assert corpo.rstrip().endswith('envie o arquivo na aba DNS do RBL Scan."')
 
 
 def test_coletor_nao_altera_nada_no_servidor():
-    script = instrucoes()["script"]
+    script = instrucoes()["script_legivel"]
     for perigoso in ("rndc reload", "systemctl restart", "rm ", "> /etc/",
                      "pdnsutil add-record", "pdnsutil edit-zone"):
         assert perigoso not in script, f"comando que altera estado: {perigoso}"
