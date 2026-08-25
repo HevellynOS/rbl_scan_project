@@ -44,10 +44,13 @@ hidden = (
         "app.database.models",
         "app.parsers.rsc_parser",
         "app.parsers.vrp_parser",
+        "app.parsers.zone_parser",
+        "app.analyzers.dns_analyzer",
         "app.analyzers.rsc_analyzer",
         "app.analyzers.vrp_analyzer",
         "app.services.rbl_service",
         "app.services.dns_service",
+        "app.services.dns_collect",
         "app.services.report_service",
     ]
 )

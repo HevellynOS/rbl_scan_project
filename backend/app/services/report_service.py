@@ -142,11 +142,22 @@ def _quantidade(titulo: str) -> str:
     return m.group(1) if m else ""
 
 
-def _collapse(ips: list[str], limite: int = 8) -> str:
-    if not ips:
+def _collapse(itens: list[str], limite: int = 8) -> str:
+    """Agrupa prefixos IP nos menores blocos possíveis.
+
+    O passo de delegação usa este mesmo campo para NOMES DE ZONA
+    (239.94.138.in-addr.arpa), que não são redes. Tentar agrupá-los como IP
+    quebrava a geração inteira do PDF, e o erro só aparecia em bloco com zona
+    não delegada.
+    """
+    if not itens:
         return "—"
-    nets = [ipaddress.ip_network(i, strict=False) for i in ips]
-    col = [str(n) for n in ipaddress.collapse_addresses(nets)]
+    try:
+        nets = [ipaddress.ip_network(i, strict=False) for i in itens]
+    except ValueError:
+        col = list(itens)
+    else:
+        col = [str(n) for n in ipaddress.collapse_addresses(nets)]
     if len(col) <= limite:
         return "  ".join(col)
     return "  ".join(col[:limite]) + f"  (+{len(col) - limite})"
@@ -561,8 +572,10 @@ def build_pdf(
                 Paragraph(TEXTO_PASSO[p["kind"]], S["p"]),
             ]
             if p["prefixes"]:
-                bloco.append(Paragraph(
-                    "Faixas afetadas: " + _collapse(p["prefixes"]), S["mono"]))
+                rotulo = ("Zonas afetadas: " if p["kind"] == "delegacao"
+                          else "Faixas afetadas: ")
+                bloco.append(Paragraph(rotulo + _collapse(p["prefixes"]),
+                                       S["mono"]))
             story.append(KeepTogether(bloco))
 
         story.append(Paragraph("Ordem de execução do lado do DNS", S["h3"]))

@@ -1462,3 +1462,74 @@ body,
   border-radius: 2px;
   padding: 0 6px;
 }
+
+/* --------------------------------------------------- coleta e remediação */
+.coleta {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+}
+
+.coleta-passo {
+  display: flex;
+  gap: 14px;
+  padding: 12px 0;
+  border-top: 1px solid var(--rule-soft);
+}
+
+.coleta-passo:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.coleta-rotulo {
+  flex: 1;
+  font-family: var(--cond);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.coleta-cmd {
+  max-height: 300px;
+}
+
+.coleta-check {
+  height: auto;
+  padding-top: 8px;
+  font-size: 11.5px;
+}
+
+.fix-bloco {
+  border-top: 1px solid var(--rule-soft);
+  padding-top: 14px;
+  margin-top: 14px;
+}
+
+.fix-bloco:first-of-type {
+  border-top: none;
+}
+
+.fix-titulo {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 6px;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.fix-arquivo {
+  margin: 0 0 6px;
+  font-size: 11px;
+  color: var(--muted);
+  word-break: break-all;
+}
+
+.fix-nota {
+  margin: 7px 0 0;
+  font-size: 11.5px;
+  color: var(--warn);
+}

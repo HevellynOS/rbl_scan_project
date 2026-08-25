@@ -265,3 +265,167 @@ def test_repositorio_respeita_o_teto():
     assert len(repo.list_scans()) == 2
     assert repo.get_scan("10.0.0.0/24") is None
     assert repo.get_scan("10.0.3.0/24") is not None
+
+
+# --------------------------------------------------------------------------
+# Validação de configuração de servidor DNS
+# --------------------------------------------------------------------------
+from app.analyzers.dns_analyzer import analyze_dns  # noqa: E402
+from app.parsers.zone_parser import (  # noqa: E402
+    parse_zone,
+    ptr_owner_to_ip,
+    zone_to_cidr,
+)
+
+ZONA_REVERSA = """
+$TTL 3600
+@   IN  SOA ns1.provedor.net.br. hostmaster.provedor.net.br. (
+        2026081901 3600 900 1209600 3600 )
+@   IN  NS  ns1.provedor.net.br.
+0   IN  PTR 92-191-181-0.provedor.net.br.
+1   IN  PTR gw-pop01.provedor.net.br.
+2   IN  PTR mail.provedor.net.br.
+$GENERATE 64-67 $ IN PTR 92-191-181-$.provedor.net.br.
+"""
+
+ZONA_DIRETA = """
+$TTL 3600
+$ORIGIN provedor.net.br.
+@        IN SOA ns1 hostmaster ( 1 3600 900 1209600 3600 )
+@        IN NS  ns1
+ns1      IN A   181.191.92.10
+gw-pop01 IN A   181.191.92.1
+mail     IN A   181.191.92.99
+"""
+
+
+def test_zone_to_cidr_e_ptr_owner():
+    assert str(zone_to_cidr("92.191.181.in-addr.arpa")) == "181.191.92.0/24"
+    assert ptr_owner_to_ip("15.92.191.181.in-addr.arpa") == "181.191.92.15"
+    assert zone_to_cidr("provedor.net.br") is None
+
+
+def test_generate_expande_e_herda_nome():
+    z = parse_zone(ZONA_REVERSA, "db.92.191.181", "92.191.181.in-addr.arpa")
+    gerados = [r for r in z.records if r.gerado]
+    assert len(gerados) == 4
+    assert gerados[0].name == "64.92.191.181.in-addr.arpa"
+    assert not z.erros
+
+
+def test_ptr_sem_registro_a_e_o_achado_critico():
+    """O defeito real: o PTR publica um nome que ninguém criou na zona direta.
+    Consultar só o reverso não revela isso."""
+    r = analyze_dns([("db.92.191.181", ZONA_REVERSA),
+                     ("db.provedor.net.br", ZONA_DIRETA)])
+    ids = {f["id"]: f for f in r["findings"]}
+    assert "ptr-sem-a" in ids
+    # 0, 64, 65, 66, 67 apontam para nomes inexistentes
+    assert ids["ptr-sem-a"]["count"] == 5
+    assert r["resumo"]["ptr_ok"] == 1          # só gw-pop01 fecha os dois lados
+
+
+def test_a_apontando_para_outro_endereco():
+    r = analyze_dns([("db.92.191.181", ZONA_REVERSA),
+                     ("db.provedor.net.br", ZONA_DIRETA)])
+    ids = {f["id"]: f for f in r["findings"]}
+    assert "a-divergente" in ids               # mail: PTR em .2, A em .99
+
+
+def test_detecta_octetos_em_ordem_trocada():
+    """O caso real usava 181.191.92.0 -> 92-191-181-0: comparar a sequência
+    exata não pegaria."""
+    r = analyze_dns([("db.92.191.181", ZONA_REVERSA),
+                     ("db.provedor.net.br", ZONA_DIRETA)])
+    ids = {f["id"]: f for f in r["findings"]}
+    assert "nome-generico" in ids
+    nomes = {s["nome"] for s in ids["nome-generico"]["samples"]}
+    assert "92-191-181-0.provedor.net.br" in nomes
+    assert "gw-pop01.provedor.net.br" not in nomes
+
+
+def test_sem_zona_direta_nao_finge_que_verificou():
+    """Só o reverso: a ferramenta precisa dizer que não pôde conferir, em vez
+    de acusar tudo como quebrado."""
+    r = analyze_dns([("db.92.191.181", ZONA_REVERSA)])
+    ids = {f["id"] for f in r["findings"]}
+    assert "zona-direta-ausente" in ids
+    assert "ptr-sem-a" not in ids
+    assert r["resumo"]["ptr_nao_verificavel"] == 7
+
+
+# --------------------------------------------------------------------------
+# Arquivo de coleta e remediação
+# --------------------------------------------------------------------------
+from app.parsers.zone_parser import parece_coleta, parse_coleta  # noqa: E402
+from app.services.dns_collect import instrucoes  # noqa: E402
+
+COLETA = f"""##### RBLSCAN-COLETA v1
+##### HOST: debian-reverse
+##### DATA: 2026-08-21 14:02:11 UTC
+##### SERVIDOR: bind
+
+===== ARQUIVO: /etc/bind/named.conf.local =====
+zone "92.191.181.in-addr.arpa" {{ type master; file "/etc/bind/db.92.191.181"; }};
+zone "provedor.net.br" {{ type master; file "/etc/bind/db.provedor.net.br"; }};
+===== FIM =====
+
+===== ZONA: 92.191.181.in-addr.arpa TIPO: master ARQUIVO: /etc/bind/db.92.191.181 ====={ZONA_REVERSA}
+===== FIM =====
+
+===== ZONA: provedor.net.br TIPO: master ARQUIVO: /etc/bind/db.provedor.net.br ====={ZONA_DIRETA}
+===== FIM =====
+
+##### FIM DA COLETA
+"""
+
+
+def test_parse_coleta_separa_as_partes():
+    assert parece_coleta(COLETA)
+    c = parse_coleta(COLETA)
+    assert c.host == "debian-reverse"
+    assert c.servidor == "bind"
+    assert len(c.partes) == 3
+    caminhos = [p[3] for p in c.partes]
+    assert "/etc/bind/db.92.191.181" in caminhos
+
+
+def test_coleta_produz_a_mesma_analise_que_arquivos_avulsos():
+    a = analyze_dns([("coleta.txt", COLETA)])
+    b = analyze_dns([("db.92.191.181", ZONA_REVERSA),
+                     ("db.provedor.net.br", ZONA_DIRETA)])
+    assert a["resumo"]["ptr_sem_a"] == b["resumo"]["ptr_sem_a"]
+    assert a["coleta"]["servidor"] == "bind"
+
+
+def test_remediacao_gera_generate_com_octeto_certo():
+    """Regressão: o padrão saía como '92-191-1$-81' porque a substituição
+    pegava o '81' de dentro de '181'."""
+    r = analyze_dns([("coleta.txt", COLETA)])
+    blocos = {b["id"]: b for b in r["remediacao"]["blocos"]}
+    alvo = next(b for k, b in blocos.items() if k.startswith("a-faltando"))
+    assert "$GENERATE 64-67 92-191-181-$ IN A 181.191.92.$" in alvo["conteudo"]
+    assert "92-191-1$" not in alvo["conteudo"]
+
+
+def test_remediacao_usa_o_caminho_real_do_arquivo():
+    """O rótulo de exibição não pode vazar para os comandos do servidor."""
+    r = analyze_dns([("coleta.txt", COLETA)])
+    aplicar = next(b for b in r["remediacao"]["blocos"] if b["id"] == "aplicar")
+    assert "/etc/bind/db.92.191.181" in aplicar["conteudo"]
+    assert "(db." not in aplicar["conteudo"]
+    assert "named-checkzone" in aplicar["conteudo"]
+
+
+def test_coletor_e_leitor_na_mesma_versao():
+    """Se o formato mudar sem o leitor acompanhar, a análise sairia errada em
+    silêncio."""
+    assert instrucoes()["versao"] == "1"
+    assert "RBLSCAN-COLETA v1" in instrucoes()["script"]
+
+
+def test_coletor_nao_altera_nada_no_servidor():
+    script = instrucoes()["script"]
+    for perigoso in ("rndc reload", "systemctl restart", "rm ", "> /etc/",
+                     "pdnsutil add-record", "pdnsutil edit-zone"):
+        assert perigoso not in script, f"comando que altera estado: {perigoso}"

@@ -231,3 +231,86 @@ export interface ZoneResult {
   servicos: number;
   aviso: string;
 }
+
+/* ------------------------------ validação de configuração de servidor DNS */
+export interface DnsSample {
+  ip?: string;
+  nome?: string;
+  motivo?: string;
+  arquivo?: string;
+  linha?: number;
+  gerado?: boolean;
+  encontrado?: string[];
+  dominio?: string;
+  erro?: string;
+}
+
+export interface DnsFinding {
+  id: string;
+  severity: number;
+  severity_label: string;
+  title: string;
+  detail: string;
+  why: string;
+  fix: string[];
+  samples: DnsSample[];
+  count: number;
+}
+
+export interface ColetaPasso {
+  titulo: string;
+  detalhe: string;
+  comando: string;
+}
+
+export interface ColetaHelp {
+  versao: string;
+  arquivo: string;
+  passos: ColetaPasso[];
+  script: string;
+  script_sem_sudo: string;
+  nota_sudo: string;
+  seguranca: string;
+}
+
+export interface BlocoRemediacao {
+  id: string;
+  titulo: string;
+  arquivo: string;
+  linguagem: string;
+  conteudo: string;
+  nota: string;
+}
+
+export interface DnsValidation {
+  coleta: {
+    host?: string;
+    data?: string;
+    servidor?: string;
+    versao?: string;
+    partes?: number;
+  };
+  avisos: string[];
+  remediacao: { blocos: BlocoRemediacao[]; total: number };
+  arquivos: {
+    nome: string;
+    origin: string;
+    reversa: boolean;
+    cidr: string;
+    registros: number;
+    gerados: number;
+  }[];
+  named_conf: { nome: string; zonas: Record<string, string>[] }[];
+  ignorados: string[];
+  resumo: {
+    zonas: number;
+    ptr_total: number;
+    ptr_sem_a: number;
+    ptr_divergente: number;
+    ptr_nao_verificavel: number;
+    ptr_ok: number;
+    genericos: number;
+  };
+  findings: DnsFinding[];
+  counts: Record<string, number>;
+}
