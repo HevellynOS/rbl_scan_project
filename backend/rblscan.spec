@@ -51,7 +51,9 @@ hidden = (
         "app.services.rbl_service",
         "app.services.dns_service",
         "app.services.dns_collect",
+        "app.services.delegation_service",
         "app.services.report_service",
+        "app.services.removal_service",
     ]
 )
 

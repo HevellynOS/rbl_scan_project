@@ -317,3 +317,88 @@ export interface DnsValidation {
   findings: DnsFinding[];
   counts: Record<string, number>;
 }
+
+/* --------------------------------------------------- relatórios e remoção */
+export interface Remediacao {
+  id: string;
+  texto: string;
+  sugerido: boolean;
+}
+
+export interface GrupoRemocao {
+  lista: string;
+  nome_publico: string;
+  canal: "formulario" | "automatico" | "ticket";
+  canal_label: string;
+  url: string;
+  severidade: number;
+  nota: string;
+  motivos: string[];
+  total: number;
+  ips: string[];
+  prefixos: string[];
+  assunto: string;
+  texto: string;
+}
+
+export interface RemovalPlan {
+  network: string;
+  gerado: string;
+  total_listados: number;
+  listas: number;
+  grupos: GrupoRemocao[];
+  remediacoes_disponiveis: Remediacao[];
+  remediacoes_aplicadas: string[];
+  faltando: string[];
+  sem_remediacao: boolean;
+  aviso_canal: string;
+  aviso_ordem: string;
+}
+
+/* ------------------------------------------- cadeia de delegação e terceiros */
+export interface ServidorInfo {
+  nome: string;
+  ips: string[];
+  responde: boolean;
+  autoritativo: boolean;
+  detalhe: string;
+}
+
+export interface TesteNome {
+  nome: string;
+  ip_esperado: string;
+  por_servidor: {
+    servidor: string;
+    respondeu: boolean;
+    valores: string[];
+    confere: boolean;
+    detalhe: string;
+  }[];
+}
+
+export interface DominioCadeia {
+  dominio: string;
+  erro: string;
+  ns: string[];
+  servidores: ServidorInfo[];
+  hospedado_por_nos: boolean;
+  galho_sugerido: string;
+  amostras: TesteNome[];
+  nomes_no_ptr: number;
+}
+
+export interface AchadoCadeia {
+  id: string;
+  severidade: number;
+  titulo: string;
+  detalhe: string;
+  porque: string;
+  correcao: string[];
+}
+
+export interface ChainResult {
+  dominios: DominioCadeia[];
+  reversas: { zona: string; erro: string; ns: string[]; hospedado_por_nos: boolean }[];
+  servidores_locais: string[];
+  achados: AchadoCadeia[];
+}

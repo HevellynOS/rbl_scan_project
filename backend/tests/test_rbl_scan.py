@@ -16,6 +16,7 @@ reintroduza em silêncio.
 
 from __future__ import annotations
 
+import io
 import os
 import sys
 
@@ -447,3 +448,168 @@ def test_coletor_nao_altera_nada_no_servidor():
     for perigoso in ("rndc reload", "systemctl restart", "rm ", "> /etc/",
                      "pdnsutil add-record", "pdnsutil edit-zone"):
         assert perigoso not in script, f"comando que altera estado: {perigoso}"
+
+
+# --------------------------------------------------------------------------
+# Relatórios: remoção e configuração
+# --------------------------------------------------------------------------
+from app.services.removal_service import (  # noqa: E402
+    CANAIS,
+    build_removal_markdown,
+    build_removal_plan,
+    sugestoes_remediacao,
+)
+
+REPORT_LISTADO = {
+    "network": "181.191.92.0/22",
+    "rows": [
+        {"ip": "181.191.92.18", "lists": ["SPAMHAUS-ZEN", "DRONEBL"],
+         "reasons": ["XBL"]},
+        {"ip": "181.191.92.27", "lists": ["SPAMHAUS-ZEN"], "reasons": ["PBL"]},
+        {"ip": "181.191.92.70", "lists": ["UCEPROTECT-L1"], "reasons": ["L1"]},
+    ],
+    "counts": {"behavior": 224, "policy": 800, "clean": 0},
+    "rdns": {"no_ptr": 1, "generic": 0, "fcrdns_broken": 1023,
+             "with_ptr": 1023, "audited": 1024, "clean": 0},
+}
+
+
+def test_remocao_agrupa_por_lista():
+    p = build_removal_plan(REPORT_LISTADO, provedor="X", asn="1", contato="a",
+                           telefone="b")
+    por = {g["lista"]: g for g in p["grupos"]}
+    assert por["SPAMHAUS-ZEN"]["total"] == 2
+    assert por["DRONEBL"]["total"] == 1
+    assert p["total_listados"] == 3
+    assert not p["faltando"]
+
+
+def test_lista_que_expira_sozinha_nao_pede_remocao():
+    """Insistir em lista auto-expirável atrasa em vez de acelerar."""
+    p = build_removal_plan(REPORT_LISTADO)
+    uce = next(g for g in p["grupos"] if g["lista"] == "UCEPROTECT-L1")
+    assert uce["canal"] == "automatico"
+    md = build_removal_markdown(p)
+    assert "Texto do pedido" in md          # existe para as de formulário
+    assert md.count("Texto do pedido") == len(
+        [g for g in p["grupos"] if g["canal"] != "automatico"])
+
+
+def test_nenhum_canal_inventa_email():
+    """Quase nenhuma RBL aceita pedido por e-mail. Inventar endereço faria a
+    equipe mandar pedido para o vazio."""
+    for nome, meta in CANAIS.items():
+        assert meta["canal"] in ("formulario", "automatico", "ticket"), nome
+        assert "@" not in meta.get("nome_publico", ""), nome
+
+
+def test_campos_vazios_viram_marcador_visivel():
+    p = build_removal_plan(REPORT_LISTADO)
+    assert set(p["faltando"]) == {"provedor", "ASN", "responsável técnico",
+                                  "telefone"}
+    texto = p["grupos"][0]["texto"]
+    assert "<PROVEDOR>" in texto and "<ASN>" in texto
+
+
+def test_sem_remediacao_marcada_o_pedido_avisa():
+    p = build_removal_plan(REPORT_LISTADO, remediacoes=[])
+    # Sem escolha explícita, entram as sugeridas; a flag só liga quando não
+    # sobra nenhuma.
+    assert p["remediacoes_aplicadas"]
+    vazio = build_removal_plan(
+        {"network": "1.2.3.0/24", "rows": [], "counts": {}, "rdns": {}},
+        remediacoes=["inexistente"])
+    assert vazio["sem_remediacao"]
+    assert "<DESCREVA O QUE FOI CORRIGIDO" in (
+        vazio["grupos"][0]["texto"] if vazio["grupos"] else
+        "<DESCREVA O QUE FOI CORRIGIDO")
+
+
+def test_sugestoes_derivam_do_que_a_varredura_achou():
+    ids = {i["id"] for i in sugestoes_remediacao(REPORT_LISTADO)}
+    assert {"contencao", "ptr", "fcrdns"} <= ids
+    limpo = sugestoes_remediacao(
+        {"counts": {"behavior": 0}, "rdns": {"no_ptr": 0, "fcrdns_broken": 0}})
+    assert {i["id"] for i in limpo} == {"monitoramento"}
+
+
+def test_relatorio_de_configuracao_nao_traz_comandos():
+    """Comando transcrito de PDF gera erro de digitação, e em equipamento de
+    borda isso derruba serviço. Eles vão no arquivo de correção."""
+    from pypdf import PdfReader
+
+    from app.services.report_service import build_config_pdf
+
+    an = analyze([("ne40.txt", _ler("exemplo-ne40.txt"))])
+    pdf = build_config_pdf(an, cliente="Teste", preparado_por="QA")
+    texto = "".join(p.extract_text() for p in PdfReader(io.BytesIO(pdf)).pages)
+    for comando in ("undo telnet server enable", "rule 5 deny",
+                    "snmp-agent community read", "undo rule"):
+        assert comando not in texto, f"comando vazou para o PDF: {comando}"
+
+
+# --------------------------------------------------------------------------
+# Cadeia de delegação
+# --------------------------------------------------------------------------
+from app.services.delegation_service import (  # noqa: E402
+    _achados,
+    _dominio_registravel,
+    galho_comum,
+)
+
+
+def test_galho_comum_encontra_o_menor_pedaco_a_delegar():
+    """Quando o domínio fica com terceiros, delegar só o galho resolve o bloco
+    inteiro com dois registros NS, sem mexer em site nem em e-mail."""
+    nomes = ["0.92.pop.prov.net.br", "5.92.pop.prov.net.br",
+             "7.93.pop.prov.net.br", "200.95.pop.prov.net.br"]
+    assert galho_comum(nomes, "prov.net.br") == "pop.prov.net.br"
+    # Um /24 só: o galho é mais específico.
+    assert galho_comum(["0.92.pop.x.net.br", "9.92.pop.x.net.br"],
+                       "x.net.br") == "92.pop.x.net.br"
+    # Padrão sem galho comum (nomes na raiz do domínio) não inventa um.
+    assert galho_comum(["45-80-48-0.rem.net.br", "45-80-49-5.rem.net.br"],
+                       "rem.net.br") == ""
+
+
+def test_dominio_registravel_com_sufixo_br():
+    assert _dominio_registravel("0.92.pop.prov.net.br") == "prov.net.br"
+    assert _dominio_registravel("mail.empresa.com") == "empresa.com"
+
+
+def test_dominio_em_terceiros_e_critico():
+    """O caso real: registros A corretos num servidor para o qual o domínio
+    não está delegado são registros invisíveis."""
+    dominios = [{
+        "dominio": "prov.net.br", "erro": "", "ns": ["ns1.hostgator.com.br"],
+        "servidores": [], "hospedado_por_nos": False,
+        "galho_sugerido": "pop.prov.net.br",
+        "amostras": [], "nomes_no_ptr": 1023,
+    }]
+    achados = _achados(dominios, [])
+    assert achados[0]["severidade"] == 3
+    assert "terceiros" in achados[0]["titulo"]
+    texto = "\n".join(achados[0]["correcao"])
+    assert "pop.prov.net.br.   IN NS" in texto
+
+
+def test_dominio_nosso_e_respondendo_nao_gera_achado():
+    dominios = [{
+        "dominio": "prov.net.br", "erro": "", "ns": ["ns1.prov.net.br"],
+        "servidores": [], "hospedado_por_nos": True, "galho_sugerido": "",
+        "amostras": [{"nome": "0.92.pop.prov.net.br", "ip_esperado": "1.2.3.0",
+                      "por_servidor": [{"servidor": "ns1.prov.net.br",
+                                        "respondeu": True,
+                                        "valores": ["1.2.3.0"],
+                                        "confere": True, "detalhe": ""}]}],
+        "nomes_no_ptr": 1,
+    }]
+    assert _achados(dominios, []) == []
+
+
+def test_reversa_sem_delegacao_e_critico():
+    achados = _achados([], [{"zona": "92.191.181.in-addr.arpa",
+                             "erro": "o domínio não existe na hierarquia do DNS",
+                             "ns": [], "hospedado_por_nos": False}])
+    assert achados[0]["severidade"] == 3
+    assert "registro.br" in "\n".join(achados[0]["correcao"])

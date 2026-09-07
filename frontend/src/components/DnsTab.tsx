@@ -1,6 +1,7 @@
 import { useState } from "react";
-import type { Report } from "../types";
+import type { DnsValidation, Report } from "../types";
 import { ZoneBuilder } from "./Correlate";
+import DnsChain from "./DnsChain";
 import DnsConfigCheck from "./DnsConfigCheck";
 
 /**
@@ -11,6 +12,10 @@ import DnsConfigCheck from "./DnsConfigCheck";
  * eram truncados. Aqui cada item tem a largura que o conteúdo exige.
  */
 export default function DnsTab({ report }: { report: Report | null }) {
+  // A validação de arquivos alimenta a verificação de cadeia: os domínios
+  // usados nos PTR saem dela.
+  const [validacao, setValidacao] = useState<DnsValidation | null>(null);
+
   if (!report) {
     // A validação de arquivo de zona não depende de varredura: é auditoria
     // sobre a configuração, não sobre o que está publicado.
@@ -24,7 +29,8 @@ export default function DnsTab({ report }: { report: Report | null }) {
             ela.
           </p>
         </section>
-        <DnsConfigCheck />
+        <DnsConfigCheck onResultado={setValidacao} />
+        <DnsChain analise={validacao} />
       </>
     );
   }
@@ -174,8 +180,8 @@ export default function DnsTab({ report }: { report: Report | null }) {
         </section>
       )}
 
-      <DnsConfigCheck />
-      <RelatorioPdf report={report} />
+      <DnsConfigCheck onResultado={setValidacao} />
+      <DnsChain analise={validacao} />
       <ZoneBuilder cidr={report.network} />
     </>
   );
@@ -203,139 +209,5 @@ function Card({
       </span>
       <span className="rdns-hint">{hint}</span>
     </div>
-  );
-}
-
-/* ------------------------------------------------- relatório executivo */
-/**
- * Gera o PDF a partir do relatório que já está em memória no backend. O
- * documento é feito para sair da empresa: usa só dado público (registros DNS,
- * delegação, contagens agregadas) e omite deliberadamente topologia interna,
- * identificação de equipamento e os endereços com emissão ativa.
- */
-function RelatorioPdf({ report }: { report: Report }) {
-  const [cliente, setCliente] = useState("");
-  const [preparado, setPreparado] = useState("");
-  const [obs, setObs] = useState("");
-  const [dominio, setDominio] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [erro, setErro] = useState<string | null>(null);
-
-  async function gerar() {
-    setBusy(true);
-    setErro(null);
-    try {
-      const res = await fetch("/api/dns-report", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          cidr: report.network,
-          cliente,
-          preparado_por: preparado,
-          observacoes: obs,
-          dominio_exemplo: dominio,
-        }),
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => null);
-        setErro(body?.detail ?? `HTTP ${res.status}`);
-        return;
-      }
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `dns-${report.network.replace(/[./]/g, "-")}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch {
-      setErro("Falha ao falar com o backend.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <section className="panel panel-wide">
-      <h2 className="eyebrow">Relatório executivo</h2>
-      <p className="lede">
-        PDF sobre o DNS reverso de {report.network}, escrito para quem não é do
-        time de rede: o provedor de DNS, o upstream do bloco, o time de TI de
-        quem reclamou de entrega. Inclui uma seção mostrando como fica a
-        configuração correta, com exemplo dos dois registros que cada endereço
-        precisa ter.
-      </p>
-
-      <div className="gov-form">
-        <div className="field">
-          <label htmlFor="rp-cli">Cliente</label>
-          <input
-            id="rp-cli"
-            value={cliente}
-            onChange={(e) => setCliente(e.target.value)}
-            placeholder="nome do provedor auditado"
-          />
-          <span className="field-hint">aparece no cabeçalho</span>
-        </div>
-        <div className="field">
-          <label htmlFor="rp-dom">Domínio nos exemplos</label>
-          <input
-            id="rp-dom"
-            value={dominio}
-            onChange={(e) => setDominio(e.target.value)}
-            placeholder="detectado automaticamente"
-          />
-          <span className="field-hint">usado na seção de exemplo</span>
-        </div>
-        <div className="field">
-          <label htmlFor="rp-por">Preparado por</label>
-          <input
-            id="rp-por"
-            value={preparado}
-            onChange={(e) => setPreparado(e.target.value)}
-            placeholder="responsável técnico"
-          />
-          <span className="field-hint">aparece no rodapé</span>
-        </div>
-      </div>
-
-      <div className="field" style={{ marginTop: 12 }}>
-        <label htmlFor="rp-obs">Observações</label>
-        <textarea
-          id="rp-obs"
-          className="gov-textarea"
-          rows={3}
-          value={obs}
-          onChange={(e) => setObs(e.target.value)}
-          placeholder="Contexto adicional para quem vai ler. Opcional."
-        />
-        <span className="field-hint">
-          Não inclua dado sensível aqui: o documento sai da empresa.
-        </span>
-      </div>
-
-      <div className="analyze-actions">
-        <button type="button" className="primary" onClick={gerar} disabled={busy}>
-          {busy ? "Gerando…" : "Gerar relatório PDF"}
-        </button>
-      </div>
-
-      {erro && (
-        <div className="notice notice-warn" style={{ marginTop: 12 }}>
-          {erro}
-        </div>
-      )}
-
-      <p className="panel-note">
-        O documento traz apenas informação pública e verificável: registros de
-        DNS, estado da delegação e contagens agregadas. Faixas privadas,
-        identificação de equipamentos e os endereços com emissão ativa ficam de
-        fora por serem informação sensível da rede auditada
-        {report.counts.behavior > 0 &&
-          ` — os ${report.counts.behavior} endereços nessa condição são citados
-           apenas como quantidade`}
-        .
-      </p>
-    </section>
   );
 }

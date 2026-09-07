@@ -15,6 +15,11 @@ from pydantic import BaseModel, Field
 from app.analyzers.dns_analyzer import analyze_dns
 from app.core.config import settings
 from app.database.connection import get_repository
+from app.services.delegation_service import (
+    ChainConfig,
+    check_chain,
+    extrai_dominios,
+)
 from app.services.dns_collect import instrucoes
 from app.services.dns_service import build_zone
 
@@ -87,3 +92,67 @@ async def validate_dns(files: list[UploadFile] = File(...)):
                  "Envie os arquivos de /etc/bind ou a saída de "
                  "'pdnsutil list-zone <zona>'.")
     return resultado
+
+
+class ChainRequest(BaseModel):
+    """Domínios e zonas a seguir. Vem preenchido a partir da validação de
+    arquivos, mas pode ser editado: um provedor costuma ter mais de um
+    domínio em uso nos PTR, e nem todos aparecem nos arquivos enviados."""
+    dominios: list[str] = Field(default_factory=list)
+    zonas_reversas: list[str] = Field(default_factory=list)
+    servidores_locais: list[str] = Field(default_factory=list)
+    amostras: dict[str, list[dict]] = Field(default_factory=dict)
+    resolver: str | None = None
+
+
+@router.post("/dns/chain")
+async def dns_chain(req: ChainRequest):
+    """Segue a cadeia de delegação ao vivo, incluindo DNS de terceiros.
+
+    A validação por arquivo enxerga só o servidor de quem enviou. Aqui a
+    consulta é feita contra a hierarquia real: para onde o domínio está
+    delegado, e se os servidores do provedor estão nessa lista.
+
+    É a peça que faltava: registro A correto num servidor para o qual o
+    domínio não está delegado é registro invisível.
+    """
+    if not req.dominios and not req.zonas_reversas:
+        raise HTTPException(
+            400, "Informe ao menos um domínio ou uma zona reversa.")
+    if len(req.dominios) + len(req.zonas_reversas) > 40:
+        raise HTTPException(400, "Máximo de 40 nomes por verificação.")
+
+    dominios = {d: req.amostras.get(d, []) for d in req.dominios}
+    cfg = ChainConfig(resolver=req.resolver or settings.resolver)
+    try:
+        return await check_chain(dominios, req.zonas_reversas,
+                                 req.servidores_locais, cfg)
+    except Exception as e:
+        raise HTTPException(502, f"Falha ao consultar a hierarquia: {e}")
+
+
+@router.post("/dns/chain-from-analysis")
+async def chain_from_analysis(files: list[UploadFile] = File(...)):
+    """Atalho: valida os arquivos e já segue a cadeia dos domínios achados."""
+    from app.analyzers.dns_analyzer import analyze_dns
+
+    parsed: list[tuple[str, str]] = []
+    for f in files:
+        raw = await f.read()
+        try:
+            texto = raw.decode("utf-8")
+        except UnicodeDecodeError:
+            texto = raw.decode("latin-1", errors="replace")
+        parsed.append((f.filename or "zona", texto))
+
+    analise = analyze_dns(parsed)
+    dominios = extrai_dominios(analise)
+    reversas = [a["origin"] for a in analise["arquivos"]
+                if a["reversa"] and a["origin"]]
+    locais = []
+    for c in analise.get("named_conf", []):
+        for z in c.get("zonas", []):
+            locais.append(z.get("name", ""))
+    cfg = ChainConfig(resolver=settings.resolver)
+    cadeia = await check_chain(dominios, reversas, [], cfg)
+    return {"analise": analise, "cadeia": cadeia}

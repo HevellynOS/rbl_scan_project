@@ -1549,3 +1549,71 @@ body,
   gap: 18px;
   flex-wrap: wrap;
 }
+
+/* -------------------------------------------------------- aba relatórios */
+.rel-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.rel-head .eyebrow {
+  margin: 0 0 12px;
+}
+
+.rel-publico {
+  font-family: var(--cond);
+  font-size: 10px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 0 7px;
+}
+
+.rel-interno {
+  color: var(--warn);
+  border-color: var(--warn);
+}
+
+.rel-aviso {
+  margin: 0 0 8px;
+  font-size: 11.5px;
+  color: var(--warn);
+}
+
+.remed {
+  list-style: none;
+  margin: 0 0 4px;
+  padding: 0;
+}
+
+.remed li {
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.remed .check {
+  height: auto;
+  padding: 7px 0;
+  align-items: flex-start;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.canal-formulario { background: var(--policy-soft); color: var(--policy); }
+.canal-automatico { background: var(--clean-soft); color: var(--clean); }
+.canal-ticket { background: var(--warn-soft); color: var(--warn-ink); }
+
+/* ------------------------------------------------- cadeia de delegação */
+.cadeia-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px 18px;
+}
+
+.cadeia-form .gov-textarea {
+  font-size: 12px;
+  line-height: 1.5;
+}

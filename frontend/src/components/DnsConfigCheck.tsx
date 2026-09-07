@@ -9,7 +9,11 @@ import type { ColetaHelp, DnsValidation, DnsFinding } from "../types";
  * caminho para pegar PTR publicado sem o registro A correspondente antes de o
  * problema chegar na rede.
  */
-export default function DnsConfigCheck() {
+export default function DnsConfigCheck({
+  onResultado,
+}: {
+  onResultado?: (r: DnsValidation | null) => void;
+} = {}) {
   const [files, setFiles] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -50,6 +54,7 @@ export default function DnsConfigCheck() {
     setBusy(true);
     setErro(null);
     setRes(null);
+    onResultado?.(null);
     try {
       const body = new FormData();
       files.forEach((f) => body.append("files", f));
@@ -60,6 +65,7 @@ export default function DnsConfigCheck() {
         return;
       }
       setRes(data);
+      onResultado?.(data);
     } catch {
       setErro("Falha ao falar com o backend.");
     } finally {
